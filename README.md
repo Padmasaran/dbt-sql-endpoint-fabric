@@ -4,6 +4,8 @@ A working proof-of-concept showing how **dbt Core** deploys a full
 Bronze → Silver → Gold medallion view stack directly to the **SQL Endpoint**
 of a Microsoft Fabric Lakehouse, without any manual dependency wiring.
 
+![dbt lineage DAG — Bronze to Silver to Gold](docs/lineage-dag.png)
+
 ---
 
 ## Why this matters
