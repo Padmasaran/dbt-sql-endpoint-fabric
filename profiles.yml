@@ -1,0 +1,31 @@
+dbt_lakehouse_poc:
+  target: dev
+  outputs:
+
+    dev:
+      type:           fabric
+      driver:         ODBC Driver 18 for SQL Server
+      # Replace with the SQL Endpoint hostname from your Fabric workspace.
+      # Found in: Fabric portal → Lakehouse → SQL Endpoint → Copy SQL connection string
+      host:           <your-sql-endpoint>.datawarehouse.fabric.microsoft.com
+      port:           1433
+      # Default connection database — models override this via dbt_project.yml env vars.
+      database:       Silver_Lakehouse
+      schema:         dbo
+      # 'CLI' uses your active az login / Fabric token — no secrets stored here.
+      authentication: CLI
+      threads:        1
+      encrypt:        yes
+      trust_cert:     no
+
+    prod:
+      type:           fabric
+      driver:         ODBC Driver 18 for SQL Server
+      host:           <your-prod-sql-endpoint>.datawarehouse.fabric.microsoft.com
+      port:           1433
+      database:       Silver_Lakehouse
+      schema:         dbo
+      authentication: CLI
+      threads:        4
+      encrypt:        yes
+      trust_cert:     no

@@ -1,0 +1,38 @@
+version: 2
+
+# =============================================================================
+# Bronze sources
+# =============================================================================
+# These declarations point dbt at the raw Delta tables that sit in
+# Bronze_Lakehouse (a Fabric Lakehouse).  The tables are created by running
+# scripts/create_bronze_tables.py in a PySpark notebook attached to that
+# Lakehouse — see Prerequisites in README.md.
+#
+# `database` and `schema` default to env vars so you can switch workspaces
+# without touching source code:
+#   DBT_BRONZE_DATABASE  (default: Bronze_Lakehouse)
+#   DBT_BRONZE_SCHEMA    (default: dbo)
+#
+# dbt never writes to Bronze — it is read-only from dbt's perspective.
+# =============================================================================
+
+sources:
+  - name: bronze
+    database: "{{ env_var('DBT_BRONZE_DATABASE', 'Bronze_Lakehouse') }}"
+    schema:   "{{ env_var('DBT_BRONZE_SCHEMA', 'dbo') }}"
+    tables:
+
+      - name: posting_type
+        description: >
+          Reference/lookup table for posting types. Loaded from source systems
+          via PySpark notebook into Bronze_Lakehouse.dbo.posting_type.
+
+      - name: journal_entry
+        description: >
+          Raw journal entry transactions loaded from source systems.
+          Rows with NULL amount are filtered out in the Silver layer.
+
+      - name: cost_centre
+        description: >
+          Cost centre dimension. Decommissioned centres (is_active = 0)
+          are filtered out in the Silver layer.

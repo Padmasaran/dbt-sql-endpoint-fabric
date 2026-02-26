@@ -1,0 +1,45 @@
+name: dbt_lakehouse_poc
+version: "1.0.0"
+config-version: 2
+profile: dbt_lakehouse_poc
+
+model-paths: ["models"]
+macro-paths:  ["macros"]
+target-path:  "target"
+clean-targets: ["target"]
+
+# =============================================================================
+# Environment variables
+# =============================================================================
+# All database and schema names are driven by env vars so you can point the
+# same project at dev or prod Fabric workspaces without editing source code.
+#
+# Override at runtime:
+#   export DBT_SILVER_DATABASE=Silver_Dev && dbt run
+#   dbt run --target prod
+#
+# Variables below are for Bronze source identifiers only (actual table names).
+# =============================================================================
+
+vars:
+  # Bronze source table identifiers (actual Delta table names in Bronze_Lakehouse)
+  tbl_bronze_posting_type:  posting_type
+  tbl_bronze_journal_entry: journal_entry
+  tbl_bronze_cost_centre:   cost_centre
+
+# =============================================================================
+# Model configuration
+# =============================================================================
+# All models materialise as VIEWs on the SQL Endpoint of the target Lakehouse
+# or Warehouse.  Database and schema are resolved from env vars at run time.
+# =============================================================================
+
+models:
+  dbt_lakehouse_poc:
+    +materialized: view
+    silver:
+      +database: "{{ env_var('DBT_SILVER_DATABASE', 'Silver_Lakehouse') }}"
+      +schema:   "{{ env_var('DBT_SILVER_SCHEMA', 'silver') }}"
+    gold:
+      +database: "{{ env_var('DBT_GOLD_DATABASE', 'Gold_Warehouse') }}"
+      +schema:   "{{ env_var('DBT_GOLD_SCHEMA', 'gold') }}"
