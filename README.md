@@ -8,18 +8,18 @@ of a Microsoft Fabric Lakehouse, without any manual dependency wiring.
 
 ## Why this matters
 
-SQL Database Projects give you version-controlled SQL, but they require you to
-manage deployment order manually, especially as view chains grow across layers.
+dbt Core connects to the SQL Endpoint of a Fabric Lakehouse via the
+`dbt-fabric` adapter and deploys your SQL models as views — with automatic
+dependency resolution, built-in lineage, and environment parameterisation all
+included.
 
-dbt solves that problem structurally:
-
-| Capability | SQL DB Projects | dbt on Fabric SQL Endpoint |
-|---|---|---|
-| Dependency order | Manual (script ordering) | Automatic via `ref()` |
-| Multi-environment targeting | Config files | `env_var()` + `--target` |
-| Lineage visibility | External tooling needed | Built-in DAG + docs |
-| Parameterised names | SQLCMD variables | Jinja vars / macros |
-| Cross-database views | Linked servers / manual | Native via `source()` |
+| Capability | How dbt handles it |
+|---|---|
+| Dependency order | Inferred automatically from `ref()` — no manual ordering |
+| Multi-environment targeting | `env_var()` + `--target` flag |
+| Lineage visibility | Built-in DAG + `dbt docs` — no extra tooling |
+| Parameterised names | Jinja vars / macros |
+| Cross-database views | Native via `source()` declarations |
 
 ---
 
@@ -235,12 +235,12 @@ dbt-sql-endpoint-fabric/
 
 ---
 
-## What dbt gives you here that SQL DB Projects don't
+## What this demonstrates
 
-**Zero manual dependency wiring**
+**Automatic dependency resolution**
 `ref('journal_entry')` inside `journal_entry_enriched.sql` tells dbt to
-deploy `journal_entry` first. The entire DAG resolves automatically, even
-across Silver Layer 1 → Silver Layer 2 → Gold.
+materialise `journal_entry` first. The entire DAG resolves automatically,
+even across Silver Layer 1 → Silver Layer 2 → Gold — with no manual ordering.
 
 **Parameterisation that scales**
 Database names, schema names, and table identifiers are all driven by
@@ -252,10 +252,10 @@ Run `dbt docs generate && dbt docs serve` to see a full dependency DAG and
 column-level lineage across Bronze → Silver → Gold, all from `source()` and
 `ref()` declarations.
 
-**Cross-item lineage**
+**Cross-item lineage within a single Fabric workspace**
 The same project writes views into a Lakehouse (`Silver_Lakehouse`) and a
-Warehouse (`Gold_Warehouse`) in the same workspace. dbt tracks the full
-chain without any extra configuration.
+Warehouse (`Gold_Warehouse`). dbt tracks the full chain without any extra
+configuration.
 
 ---
 
